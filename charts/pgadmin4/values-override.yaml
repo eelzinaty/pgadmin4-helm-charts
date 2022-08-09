@@ -1,0 +1,54 @@
+nodeSelector:
+  worker_group: services
+
+existingSecret: pgadmin4-asm-secrets
+env:
+  email: issam@gmail.com
+
+serviceAccount:
+  create: true
+  annotations:
+    # Tyhe IAM role that can be assumend by the service account and can read the AWS Secret Manager secret
+    eks.amazonaws.com/role-arn: arn:aws:iam::1234567890:role/pgadmin4-sa-role # AWSAccount number should be replaced
+
+persistentVolume:
+  storageClass: csi-storage-gp3
+
+service:
+  type: NodePort
+  port: 80
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+    alb.ingress.kubernetes.io/target-node-labels: "worker_group=services"
+    alb.ingress.kubernetes.io/group.name: services-ingress
+  hosts:
+    - host: pgadmin.services.sampledomain.com # This is a smaple domain, it should be replaced with the right one
+      paths:
+        - path: /
+          pathType: Prefix
+
+secretProviderClass:
+  create: true
+  createEnvironmentVariables: true
+  secrets:
+    - asmName: pgadmin_password # Name of the AWS Secrets Manager
+      environmentVariables:
+        - environmentVariableName: password # The Secret Key that the `PGADMIN_DEFAULT_PASSWORD` environment variable will point to
+          secretKey: SELF # Read the whole value as it is, no json parsing
+  volumeMounts:
+    - name: aws-secrets
+      mountPath: /etc/sm
+      readOnly: true
+  volumes:
+    - name: aws-secrets
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          secretProviderClass: pgadmin4

@@ -88,3 +88,14 @@ Return the appropriate apiVersion for network policy.
 {{- print "networking.k8s.io/v1" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create the name of the secrets provider class to use
+*/}}
+{{- define "pgadmin.secretsProviderClassName" -}}
+{{- if .Values.secretProviderClass.create }}
+{{- default (include "pgadmin.fullname" .) .Values.secretProviderClass.name }}
+{{- else }}
+{{- default "default" .Values.secretProviderClass.name }}
+{{- end }}
+{{- end }}

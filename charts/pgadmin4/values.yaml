@@ -30,7 +30,8 @@ service:
   # targetPort: 4181 To be used with a proxy extraContainer
   portName: http
 
-  annotations: {}
+  annotations:
+    {}
     ## Special annotations at the service level, e.g
     ## this will set vnet internal IP's rather than public ip's
     ## service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -55,7 +56,8 @@ serviceAccount:
 ## Strategy used to replace old Pods by new ones
 ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
 ##
-strategy: {}
+strategy:
+  {}
   # type: RollingUpdate
   # rollingUpdate:
   #   maxSurge: 0
@@ -87,7 +89,8 @@ networkPolicy:
 ## Ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
   enabled: false
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   # ingressClassName: ""
@@ -103,14 +106,16 @@ ingress:
 
 # Additional config maps to be mounted inside a container
 # Can be used to map config maps for sidecar as well
-extraConfigmapMounts: []
+extraConfigmapMounts:
+  []
   # - name: certs-configmap
   #   mountPath: /etc/ssl/certs
   #   subPath: ca-certificates.crt # (optional)
   #   configMap: certs-configmap
   #   readOnly: true
 
-extraSecretMounts: []
+extraSecretMounts:
+  []
   # - name: pgpassfile
   #   secret: pgpassfile
   #   subPath: pgpassfile
@@ -148,8 +153,8 @@ existingSecret: ""
 ## Needed chart reinstall for apply changes
 env:
   # can be email or nickname
-  email: chart@example.local
-  password: SuperSecret
+  # email: chart@example.local
+  # password: SuperSecret
   # pgpassfile: /var/lib/pgadmin/storage/pgadmin/file.pgpass
 
   # set context path for application (e.g. /pgadmin4/*)
@@ -170,12 +175,14 @@ env:
   #   value: "8080"
 
 ## Additional environment variables from ConfigMaps
-envVarsFromConfigMaps: []
+envVarsFromConfigMaps:
+  []
   # - array-of
   # - config-map-names
 
 ## Additional environment variables from Secrets
-envVarsFromSecrets: []
+envVarsFromSecrets:
+  []
   # - array-of
   # - secret-names
 
@@ -260,7 +267,8 @@ extraInitContainers: |
 containerPorts:
   http: 80
 
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -302,7 +310,8 @@ podAnnotations: {}
 
 ## Pod labels
 ##
-podLabels: {}
+podLabels:
+  {}
   # key1: value1
   # key2: value2
 
@@ -320,14 +329,25 @@ test:
     tag: latest
   ## Resources request/limit for test-connection Pod
   resources: {}
-#     limits:
-#       cpu: 25m
-#       memory: 16Mi
-#     requests:
-#       cpu: 50m
-#       memory: 32Mi
+  #     limits:
+  #       cpu: 25m
+  #       memory: 16Mi
+  #     requests:
+  #       cpu: 50m
+  #       memory: 32Mi
   ## Security context for test-connection Pod
   securityContext:
     runAsUser: 5051
     runAsGroup: 5051
     fsGroup: 5051
+
+secretProviderClass:
+  # Specifies whether a secrets provider class should be created
+  create: false
+  # Annotations to add to the secrets provider class
+  annotations: {}
+  # The name of the secrets provider class to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # Provide the secrets, full path name, list.
+  secrets: []

@@ -161,6 +161,9 @@ spec:
           {{- if .Values.extraVolumeMounts }}
             {{- .Values.extraVolumeMounts | toYaml | nindent 12 }}
           {{- end }}
+          {{- if .Values.secretProviderClass.create }}
+            {{- toYaml .Values.secretProviderClass.volumeMounts | nindent 12 }}
+          {{- end }}
           resources:
             {{- .Values.resources | toYaml | nindent 12 }}
     {{- with .Values.extraContainers }}
@@ -196,6 +199,9 @@ spec:
             items:
             - key: servers.json
               path: servers.json
+      {{- end }}
+      {{- if .Values.secretProviderClass.create }}
+        {{- toYaml .Values.secretProviderClass.volumes | nindent 8 }}
       {{- end }}
     {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
